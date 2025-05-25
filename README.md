@@ -35,11 +35,14 @@ To start Kafka with Docker:
 
 bash
 Copy code
+
 docker-compose build
+
 docker-compose up -d
+
 This will spin up Kafka and Zookeeper in detached mode.
 
-⚠️ Configuration Note
+##⚠️ Configuration Note
 Don't forget to update your machine IP address in:
 
 The frontend app configuration
