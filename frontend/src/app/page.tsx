@@ -70,7 +70,7 @@ export default function Home() {
     if (!username) return;
 
     const socket = new SockJS(
-      `http://192.168.100.19:8080/ws?username=${username}`
+      `http://YOUR-IP:8080/ws?username=${username}`
     );
     const client = new Client({
       webSocketFactory: () => socket,
@@ -176,7 +176,7 @@ export default function Home() {
     }
 
     try {
-      await fetch("http://192.168.100.19:8080/chat/upload", {
+      await fetch("http://YOUR-IP:8080/chat/upload", {
         method: "POST",
         body: formData,
       });
@@ -201,7 +201,7 @@ export default function Home() {
       receiver: selectedTab === "Private" ? selectedChat! : undefined,
     };
 
-    fetch("http://192.168.100.19:8080/chat/send", {
+    fetch("http://YOUR-IP:8080/chat/send", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(message),
