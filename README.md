@@ -6,14 +6,9 @@ This is a Next.js + Spring Boot chat application that uses Kafka for real-time m
 Start the development server:
 
 bash
-Copy code
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 Then, open your browser and navigate to:
 
 http://localhost:3000
@@ -28,8 +23,11 @@ This project uses next/font with Geist, a modern font from Vercel.
 Run the backend server:
 
 bash
+
 Copy code
+
 ./mvnw spring-boot:run
+
 Make sure Kafka is running before starting the backend.
 
 🐳 Kafka via Docker
