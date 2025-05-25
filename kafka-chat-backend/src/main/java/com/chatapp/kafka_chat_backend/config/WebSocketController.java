@@ -46,9 +46,17 @@ public class WebSocketController {
         template.convertAndSend("/topic/public", systemMessage);
     }
 
-    // Static method for WebSocketEventListener to remove users
+
+
+
     public static void removeUser(String username, SimpMessagingTemplate template) {
         onlineUsers.remove(username);
         template.convertAndSend("/topic/online-users", onlineUsers);
+
+        Model systemMessage = new Model();
+        systemMessage.setType("public");
+        systemMessage.setUser("System");
+        systemMessage.setMessage(username + " left the chat");
+        template.convertAndSend("/topic/public", systemMessage);
     }
 }

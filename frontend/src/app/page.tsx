@@ -69,7 +69,9 @@ export default function Home() {
   useEffect(() => {
     if (!username) return;
 
-    const socket = new SockJS(`http://192.168.100.19:8080/ws?username=${username}`);
+    const socket = new SockJS(
+      `http://192.168.100.19:8080/ws?username=${username}`
+    );
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 3000,
@@ -79,14 +81,21 @@ export default function Home() {
           body: JSON.stringify({ user: username }),
         });
 
+
         client.subscribe("/topic/public", (message) => {
           const msg: Message = JSON.parse(message.body);
           setMessages((prev) => {
-            const exists = msg.messageId ? prev.find((m) => m.messageId === msg.messageId) : false;
+            const exists = msg.messageId
+              ? prev.find((m) => m.messageId === msg.messageId)
+              : false;
             if (exists) return prev;
             return [
               ...prev,
-              { ...msg, fromMe: msg.user === usernameRef.current, id: Date.now() + Math.random() },
+              {
+                ...msg,
+                fromMe: msg.user === usernameRef.current,
+                id: Date.now() + Math.random(),
+              },
             ];
           });
         });
@@ -94,11 +103,17 @@ export default function Home() {
         client.subscribe("/user/queue/messages", (message) => {
           const msg: Message = JSON.parse(message.body);
           setMessages((prev) => {
-            const exists = msg.messageId ? prev.find((m) => m.messageId === msg.messageId) : false;
+            const exists = msg.messageId
+              ? prev.find((m) => m.messageId === msg.messageId)
+              : false;
             if (exists) return prev;
             return [
               ...prev,
-              { ...msg, fromMe: msg.user === usernameRef.current, id: Date.now() + Math.random() },
+              {
+                ...msg,
+                fromMe: msg.user === usernameRef.current,
+                id: Date.now() + Math.random(),
+              },
             ];
           });
 
@@ -140,9 +155,15 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/gif",
+      "application/pdf",
+    ];
     if (!allowedTypes.includes(file.type)) {
-      alert("Only image files are allowed.");
+      alert("Only image and pdf files are allowed.");
       return;
     }
 
@@ -196,7 +217,8 @@ export default function Home() {
   const filteredMessages = messages.filter((msg) => {
     if (!msg.type) return false;
 
-    if (selectedTab === "Public" && msg.type.toLowerCase() === "public") return true;
+    if (selectedTab === "Public" && msg.type.toLowerCase() === "public")
+      return true;
 
     if (selectedTab === "Private" && msg.type.toLowerCase() === "private") {
       if (!selectedChat) return false;
@@ -253,7 +275,9 @@ export default function Home() {
           <div className="p-2 flex justify-between items-center">
             <h1 className="text-gray-800 font-semibold font-sans text-lg">
               Chat App - {selectedTab}
-              {selectedTab === "Private" && selectedChat ? ` with ${selectedChat}` : ""}
+              {selectedTab === "Private" && selectedChat
+                ? ` with ${selectedChat}`
+                : ""}
             </h1>
 
             <button
@@ -267,7 +291,7 @@ export default function Home() {
               className="hidden"
               ref={fileInputRef}
               onChange={handleFileChange}
-              accept="image/png,image/jpeg,image/jpg,image/gif"
+              accept="image/png,image/jpeg,image/jpg,image/gif,application/pdf"
             />
           </div>
 
@@ -278,33 +302,40 @@ export default function Home() {
               </p>
             )}
 
-            {filteredMessages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`mb-2 flex flex-col max-w-xl rounded-md p-2 ${
-                  msg.user === "System"
-                    ? "bg-yellow-100 text-center mx-auto italic text-gray-700"
-                    : msg.fromMe
-                    ? "bg-green-200 ml-auto rounded-tr-none"
-                    : "bg-gray-200 mr-auto rounded-tl-none"
-                }`}
-              >
-                {msg.user !== "System" && (
-                  <div className="text-xs font-semibold text-gray-700 mb-1">
-                    {msg.user}
-                  </div>
-                )}
-                {/\.(png|jpe?g|gif)$/i.test(msg.message) && msg.message.startsWith("http") ? (
-                  <img
-                    src={msg.message}
-                    alt="uploaded"
-                    className="max-w-xs max-h-64 object-contain rounded"
-                  />
-                ) : (
-                  <div className="whitespace-pre-wrap">{msg.message}</div>
-                )}
-              </div>
-            ))}
+            {filteredMessages.map((msg) => {
+              const isDisconnect =
+                msg.user === "System" && msg.message.includes("left the chat");
+              return (
+                <div
+                  key={msg.id}
+                  className={`mb-2 flex flex-col max-w-xl rounded-md p-2 ${
+                    msg.user === "System"
+                      ? isDisconnect
+                        ? "bg-red-100 text-center mx-auto italic text-red-700 font-semibold"
+                        : "bg-yellow-100 text-center mx-auto italic text-gray-700"
+                      : msg.fromMe
+                      ? "bg-green-200 ml-auto rounded-tr-none"
+                      : "bg-gray-200 mr-auto rounded-tl-none"
+                  }`}
+                >
+                  {msg.user !== "System" && (
+                    <div className="text-xs font-semibold text-gray-700 mb-1">
+                      {msg.user}
+                    </div>
+                  )}
+                  {/\.(png|jpe?g|gif)$/i.test(msg.message) &&
+                  msg.message.startsWith("http") ? (
+                    <img
+                      src={msg.message}
+                      alt="uploaded"
+                      className="max-w-xs max-h-64 object-contain rounded"
+                    />
+                  ) : (
+                    <div className="whitespace-pre-wrap">{msg.message}</div>
+                  )}
+                </div>
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
 
